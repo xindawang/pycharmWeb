@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
-    <value-preview-text-wrapping value="true" />
+    <value-preview-text-wrapping value="false" />
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DataExportManager">
@@ -25,11 +25,6 @@
     <show-object-properties value="true" />
     <loaded-nodes>
       <connection connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3">
-        <schema name="indoor_positioning" object-types="function, procedure, table, view" />
-        <schema name="information_schema" object-types="function, procedure, table, view" />
-        <schema name="mxonline" object-types="function, procedure, table, view" />
-        <schema name="mysql" object-types="function, procedure, table, view" />
-        <schema name="performance_schema" object-types="function, procedure, table, view" />
         <schema name="test" object-types="column, constraint, function, index, procedure, table, dataset trigger, view" />
       </connection>
     </loaded-nodes>
@@ -1037,6 +1032,7 @@ CREATE TABLE `xadmin_userwidget` (
     </connection>
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.auth_user_groups" active-filter-id="EMPTY_FILTER" />
     <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.courses_lesson" active-filter-id="EMPTY_FILTER" />
     <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.auth_user" active-filter-id="EMPTY_FILTER" />
     <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.courses_course" active-filter-id="" />
@@ -1046,6 +1042,9 @@ CREATE TABLE `xadmin_userwidget` (
       </filter>
     </filter-list>
     <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.courses_courseresource" active-filter-id="" />
+    <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.persons" active-filter-id="EMPTY_FILTER" />
+    <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.operation_coursecomments" active-filter-id="EMPTY_FILTER" />
+    <filter-list connection-id="0f0b6141-dd47-4520-8c10-d541c76551b3" dataset="test.user_info" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />

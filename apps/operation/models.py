@@ -31,6 +31,17 @@ class CourseComments(models.Model):
         verbose_name_plural = verbose_name
 
 
+class CourseQuestions(models.Model):
+    user = models.ForeignKey(UserProfile, verbose_name='用户',on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, verbose_name='课程',on_delete=models.CASCADE)
+    questions = models.CharField(max_length=200, verbose_name='提问')
+    add_time = models.DateTimeField(default=datetime.now, verbose_name='提问时间')
+
+    class Meta:
+        verbose_name = '课程提问'
+        verbose_name_plural = verbose_name
+
+
 class UserFavorite(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='用户',on_delete=models.CASCADE)
     fav_id = models.IntegerField(default=0, verbose_name='收藏数据ID')
