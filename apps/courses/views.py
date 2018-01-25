@@ -8,7 +8,7 @@ from django.db.models import Q
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
 from .models import Course, CourseResource, Video
-from operation.models import UserFavorite, CourseComments, UserCourse, CourseQuestions
+from operation.models import UserFavorite, CourseComments, UserCourse, CourseQuestions, CourseQuestions_Answers
 from utils.mixin_utils import LoginRequireMixin
 
 
@@ -195,10 +195,12 @@ class CourseQuestionView(LoginRequireMixin, View):
 
         all_resources = CourseResource.objects.filter(course=course)
         all_questions = CourseQuestions.objects.all()
+        all_answers = CourseQuestions_Answers.objects.filter(course=course)
         return render(reuqest, "course-question.html", {
             "course": course,
             "course_recourses": all_resources,
             "all_questions": all_questions,
+            "all_answers": all_answers,
         })
 
 
@@ -240,6 +242,29 @@ class AddQuestionsView(View):
             course_questions.questions = questions
             course_questions.user = request.user
             course_questions.save()
+            return HttpResponse('{"status": "success", "msg": "添加成功"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status": "fail", "msg": "添加失败"}', content_type='application/json')
+
+class AddAnswersView(View):
+    # 用户添加课程评论
+    def post(self, request):
+        course_id = request.POST.get("course_id", 0)
+        answers = request.POST.get("answers", "")
+        question_id = request.POST.get("question_id", 0)
+
+        if not request.user.is_authenticated():
+            # 判断用户登录状态
+            return HttpResponse('{"status": "fail", "msg": "用户未登录"}', content_type='application/json')
+
+        if int(course_id) > 0 and answers:
+            course_questions_answers = CourseQuestions_Answers()
+            course = Course.objects.get(id=int(course_id))
+            course_questions_answers.course = course
+            course_questions_answers.question = CourseQuestions.objects.get(id=int(question_id))
+            course_questions_answers.answers = answers
+            course_questions_answers.user = request.user
+            course_questions_answers.save()
             return HttpResponse('{"status": "success", "msg": "添加成功"}', content_type='application/json')
         else:
             return HttpResponse('{"status": "fail", "msg": "添加失败"}', content_type='application/json')

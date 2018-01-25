@@ -41,6 +41,17 @@ class CourseQuestions(models.Model):
         verbose_name = '课程提问'
         verbose_name_plural = verbose_name
 
+class CourseQuestions_Answers(models.Model):
+    user = models.ForeignKey(UserProfile, verbose_name='用户',on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, verbose_name='课程',on_delete=models.CASCADE)
+    question = models.ForeignKey(CourseQuestions, verbose_name='提问',on_delete=models.CASCADE)
+    answers = models.CharField(max_length=200, verbose_name='回答')
+    add_time = models.DateTimeField(default=datetime.now, verbose_name='回答时间')
+
+    class Meta:
+        verbose_name = '课程回答'
+        verbose_name_plural = verbose_name
+
 
 class UserFavorite(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='用户',on_delete=models.CASCADE)

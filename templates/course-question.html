@@ -2,7 +2,7 @@
 
 {% load staticfiles %}
 
-{% block title %}课程品论{% endblock %}
+{% block title %}课程提问{% endblock %}
 
 {% block custom_bread %}
 <section>
@@ -11,7 +11,7 @@
             <li><a href="/">首页</a>></li>
             <li><a href="{% url 'course:course_list' %}">公开课程</a>></li>
             <li><a href="{% url 'course:course_detail' course.id %}">课程详情</a>></li>
-            <li>课程评论</li>
+            <li>课程提问</li>
         </ul>
     </div>
 </section>
@@ -67,7 +67,7 @@
                         </ul>
                     </div>
 
-                    <!--发布评论-->
+                    <!--发布提问-->
                     <div id="js-pub-container" class="issques clearfix js-form">
                         <div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">
                             <textarea id="js-pl-textarea" class="" placeholder="我有问题要提问！" ></textarea>
@@ -83,7 +83,7 @@
                                 <div class="media">
                                     <span target="_blank"><img src='{{ MEDIA_URL }}{{ user_questions.user.image }}' width='40' height='40' /></span>
                                 </div>
-                                <div class="bd">
+                                <div id="question-id" class="bd" data-id="{{user_questions.id}}">
                                     <div class="tit">
                                         <span target="_blank">{{ user_questions.user.username}}</span>
                                     </div>
@@ -91,6 +91,29 @@
                                     <div class="footer clearfix">
                                         <span title="创建时间" class="l timeago">时间：{{ user_questions.add_time }}</span>
                                     </div>
+
+                                    <ul class="mod-post" id="answer-list">
+                                        {% for user_answers in all_answers %}
+                                            {% if user_answers.question_id == user_questions.id %}
+                                            <li class="post-row">
+                                            <div class="media">
+                                                <span target="_blank"><img src='{{ MEDIA_URL }}{{ user_answers.user.image }}' width='40' height='40' /></span>
+                                            </div>
+                                            <div  class="bd" data-id="{{user_questions.id}}">
+                                                <div class="tit">
+                                                    <span target="_blank">{{ user_answers.user.username}}</span>
+                                                </div>
+                                                <p class="cnt">{{ user_answers.answers}}</p>
+                                                <div class="footer clearfix">
+                                                    <span title="创建时间" class="l timeago">时间：{{ user_answers.add_time }}</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {% endif %}
+                                        {% endfor %}
+
+                                    </ul>
+
                                     <button class="questionReply" style="background:white;color:blue">回答</button>
                                 </div>
                             </li>
@@ -184,19 +207,54 @@
 <script type="text/javascript">
 
     $('.questionReply').on('click', function(){
-        $(this).html('<div id="js-pub-container" class="issques clearfix js-form">'+
+        var questionId = $(this).parents("#question-id").attr("data-id")
+        var txt = '<div id="js-pub-container" class="issques clearfix js-form">'+
         '<div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">'+
-        '<textarea class="" placeholder="我要回答！" ></textarea>'+
+        '<textarea onmouseup="" id="answerText" class="" placeholder="我要回答！" ></textarea>'+
         '</div>'+
-        '<input type="button" class="pub-btn" style="margin-right:80px" value="确定">'+
+        '<input type="button" data-id='+questionId+
+        ' class="pub-btn answerConfirm" style="margin-right:80px" value="确定">'+
         '<input type="button" class="pub-btn answerCancel" value="取消">'+
-        '<p class="global-errortip js-global-error"></p></div>')
+        '<p class="global-errortip js-global-error"></p></div>'
+        $(this).parents("#question-id").append(txt)
+        $(this).remove()
     })
+
+    //添加回答
+    $('.answerConfirm').live('click', function(){
+        var questionId = $(this).attr("data-id")
+        var answers = $(this).parents("#js-pub-container").children("#js-pl-input-fake").children("#answerText").val()
+        if(answers == ""){
+            alert("回答不能为空")
+            return
+        }
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url:"{% url 'course:add_answer'%}",
+            data:{'course_id':{{ course.id }}, 'answers':answers,'question_id':questionId},
+            async: true,
+            beforeSend:function(xhr, settings){
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            },
+            success: function(data) {
+                if(data.status == 'fail'){
+                    if(data.msg == '用户未登录'){
+                        window.location.href="/login/";
+                    }else{
+                        alert(data.msg)
+                    }
+
+                }else if(data.status == 'success'){
+                    window.location.reload();//刷新当前页面.
+                }
+            },
+        });
+    });
 
     //.on方法无效
     $('.answerCancel').live('click', function(){
-        console.log($(this))
-        <!--$(this).parent().children("div").remove();-->
+        window.location.reload();
     })
 
     //添加提问

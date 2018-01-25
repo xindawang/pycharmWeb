@@ -3,7 +3,7 @@
 from django.conf.urls import url, include
 
 from .views import CourseListView, CourseDetailView, CourseInfoView, CourseCommentView, AddCommentsView, VideoPlayView, \
-    CourseQuestionView, CourseTestView, AddQuestionsView
+    CourseQuestionView, CourseTestView, AddQuestionsView, AddAnswersView
 
 urlpatterns = [
     # 课程机构首页
@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^add_comment/$', AddCommentsView.as_view(), name='add_acomment'),
     # 添加课程提问页
     url(r'^add_question/$', AddQuestionsView.as_view(), name='add_aquestion'),
+    # 添加课程提问回答
+    url(r'^add_question_answer/$', AddAnswersView.as_view(), name='add_answer'),
     # 添加课程视频页
     url(r'^video/(?P<video_id>\d+)/$', VideoPlayView.as_view(), name='video_play'),
 
