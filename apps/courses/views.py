@@ -8,7 +8,8 @@ from django.db.models import Q
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
 from .models import Course, CourseResource, Video
-from operation.models import UserFavorite, CourseComments, UserCourse, CourseQuestions, CourseQuestions_Answers
+from operation.models import UserFavorite, CourseComments, UserCourse, CourseQuestions, CourseQuestions_Answers, \
+    VideoTest
 from utils.mixin_utils import LoginRequireMixin
 
 
@@ -71,14 +72,46 @@ class CourseTestView(View):
         relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums")
 
         all_resources = CourseResource.objects.filter(course=course)
+        video_test = VideoTest.objects.filter(video_id=video_id)
 
         return render(request, "course-test.html", {
             "course": course,
             "course_recourses": all_resources,
             "relate_courses": relate_courses,
             "video": video,
+            "video_test":video_test,
         })
 
+class CourseTestUploadView(View):
+    # 视频播放页面
+    def get(self, request, video_id):
+        video = Video.objects.get(id=int(video_id))
+        course = video.lesson.course
+        course.students += 1
+        course.save()
+
+        # 查询用户是否已经关联了该课程
+        user_courses = UserCourse.objects.filter(user=request.user, course=course)
+        if not user_courses:
+            user_course = UserCourse(user=request.user, course=course)  # 用户是否与该课程有关联，若没有则建立关系
+            user_course.save()
+
+        user_cousers = UserCourse.objects.filter(course=course)  #
+        user_ids = [user_couser.user.id for user_couser in user_cousers]  # 提取所有user id
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids)  # 用user id 提取这些user 所学过的课程
+        # 取出所有课程id
+        course_ids = [user_couser.course.id for user_couser in all_user_courses]
+        # 获取 学过该课程的用户还学过其他的课程
+        relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums")
+
+        all_resources = CourseResource.objects.filter(course=course)
+
+        return render(request, "course-test-upload.html", {
+            "course": course,
+            "course_recourses": all_resources,
+            "relate_courses": relate_courses,
+            "video": video,
+        })
 
 class VideoPlayView(View):
     # 视频播放页面
@@ -265,6 +298,34 @@ class AddAnswersView(View):
             course_questions_answers.answers = answers
             course_questions_answers.user = request.user
             course_questions_answers.save()
+            return HttpResponse('{"status": "success", "msg": "添加成功"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status": "fail", "msg": "添加失败"}', content_type='application/json')
+
+class AddTestQuestionView(View):
+    # 用户添加课程评论
+    def post(self, request, video_id):
+        question = request.POST.get("question", "")
+        ansA = request.POST.get("ansA", "")
+        ansB = request.POST.get("ansB", "")
+        ansC = request.POST.get("ansC", "")
+        ansD = request.POST.get("ansD", "")
+        correctAns = request.POST.get("correctAns", "")
+
+        if not request.user.is_authenticated():
+            # 判断用户登录状态
+            return HttpResponse('{"status": "fail", "msg": "用户未登录"}', content_type='application/json')
+
+        if int(video_id) > 0:
+            videoTest = VideoTest()
+            videoTest.video = Video.objects.get(id=int(video_id))
+            videoTest.question = question
+            videoTest.ansA = ansA
+            videoTest.ansB = ansB
+            videoTest.ansC = ansC
+            videoTest.ansD = ansD
+            videoTest.correctAns = correctAns
+            videoTest.save()
             return HttpResponse('{"status": "success", "msg": "添加成功"}', content_type='application/json')
         else:
             return HttpResponse('{"status": "fail", "msg": "添加失败"}', content_type='application/json')

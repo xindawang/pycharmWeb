@@ -6,7 +6,7 @@ from datetime import datetime
 from django.db import models              # 导入models对象
 
 from users.models import UserProfile      # 导入用户信息表
-from courses.models import Course         # 导入课程表
+from courses.models import Course, Video  # 导入课程表
 
 
 class UserAsk(models.Model):
@@ -50,6 +50,19 @@ class CourseQuestions_Answers(models.Model):
 
     class Meta:
         verbose_name = '课程回答'
+        verbose_name_plural = verbose_name
+
+class VideoTest(models.Model):
+    video = models.ForeignKey(Video, verbose_name='视频',on_delete=models.CASCADE)
+    question = models.CharField(max_length=200, verbose_name='题目')
+    ansA = models.CharField(max_length=50, verbose_name='选项A')
+    ansB = models.CharField(max_length=50, verbose_name='选项B')
+    ansC = models.CharField(max_length=50, verbose_name='选项C')
+    ansD = models.CharField(max_length=50, verbose_name='选项D')
+    correctAns = models.CharField(max_length=12, verbose_name='正确答案')
+
+    class Meta:
+        verbose_name = '课程小测试'
         verbose_name_plural = verbose_name
 
 
