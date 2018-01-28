@@ -17,6 +17,14 @@
             top: 45%;
             left: 45%;
         }
+        .option-style{
+            font-size:14px;
+            margin-bottom:10px;
+        }
+        .option-radio-style{
+            width:16px;
+            height:16px
+        }
     </style>
 {% endblock %}
 
@@ -25,6 +33,13 @@
     <script>
         function checkAnswer(){
             $('#correctAnswerLable').attr("hidden",false);
+
+            $(".questionDiv").each(function(index,e){
+                var optionValue= $(this).children("div").children("div").children("form").children("input:radio[name='ans']:checked").val()
+                if ($(this).attr("data-id") != optionValue){
+                    $(this).attr("style","color:red")
+                }
+            })
         }
     </script>
 {% endblock %}
@@ -54,34 +69,66 @@
 {% block content %}
     <div id="main">
 
+        {% if user.is_staff %}
         <label class="btn btn-primary" style="margin-left:45%;margin-right:45%;margin-bottom:20px;">
             <input type="button" onclick="location='{% url 'course:course_test_upload' video.id %}'">上传题目
         </label>
+        {% endif %}
 
-    <div style=" width: 1200px;
+    <div style="
             position:relative;left:50%;
+            border:1px solid lightgrey;
+            margin-right:30%;
             transform:translate(-50%,0);">
         {% for each_test in video_test%}
-        <div style="margin-left:20%;margin-right:20%;border-bottom:1px solid black">
-            <label>
-                <span title="题目">题目{{forloop.counter}}:<br>{{ each_test.question}}</span>
-            </label>
-                <div>请选择：
-                    <form>
-                        <input type="radio" name="correctAns" value="a">A：{{ each_test.ansA}}
-                        <input type="radio" name="correctAns" value="b">B：{{ each_test.ansB }}
-                        <input type="radio" name="correctAns" value="c">C：{{ each_test.ansC }}
-                        <input type="radio" name="correctAns" value="d">D：{{ each_test.ansD }}
-                    </form>
+        <div class="questionDiv" data-id="{{each_test.correctAns}}" style="border-bottom:4px solid lightgrey">
+            <div style="margin-top:3%;margin-left:2%;margin-right:2%">
+                <div style="margin-left:2%;margin-right:2%;border-bottom:1px solid lightgrey">
+                    <label>
+                        <span style="font-size:16px;font-weight:bold">{{forloop.counter}}.{{ each_test.question}}</span>
+                    </label>
                 </div>
+                    <div style="margin-top:16px">
+                        <form>
+                            <input class="option-radio-style" type="radio" name="ans" value="a">
+                            <span class="option-style">A：{{ each_test.ansA}}<br><br></span>
+                            <input class="option-radio-style" type="radio" name="ans" value="b">
+                            <span class="option-style">B：{{ each_test.ansB }}<br><br></span>
+                            <input class="option-radio-style" type="radio" name="ans" value="c">
+                            <span class="option-style">C：{{ each_test.ansC }}<br><br></span>
+                            <input class="option-radio-style" type="radio" name="ans" value="d">
+                            <span class="option-style">D：{{ each_test.ansD }}<br><br></span>
+                        </form>
+                    </div>
+            </div>
         </div>
         {% endfor %}
         <label class="btn btn-primary" style="margin-top:50px;margin-left:45%;margin-right:45%;">
-            <input type="button" onclick="checkAnswer()">查看答案
+            <input type="button" onclick="checkAnswer()">提交
         </label>
-        <label id="correctAnswerLable"hidden style="margin-top:50px;margin-left:45%;margin-right:45%;">
-            <span>正确答案：{% for each_test in video_test%}{{ each_test.correctAns}}{% endfor %}</span>
-        </label>
+        <div id="correctAnswerLable"hidden >
+            <label style="margin-top:50px;margin-left:45%;margin-right:45%;">
+                <span>正确答案：{% for each_test in video_test%}{{ each_test.correctAns}}{% endfor %}</span>
+            </label>
+            <label style="margin-top:20px;margin-left:45%;margin-right:45%;">
+                <span>解析：</span>
+            </label>
+            {% for each_test in video_test%}
+            <div style="border-bottom:4px solid lightgrey;margin-top:3%;margin-left:2%;margin-right:2%">
+                <div>
+                    <label>
+                        <span style="font-size:16px">
+                            {% if each_test.analysis %}
+                            {{forloop.counter}}.{{ each_test.analysis}}
+                            {% else %}
+                            {{forloop.counter}}.无
+                            {% endif %}
+                        </span>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     <div class="course-info-main clearfix w has-progress">

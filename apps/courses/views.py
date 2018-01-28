@@ -11,7 +11,7 @@ from .models import Course, CourseResource, Video
 from operation.models import UserFavorite, CourseComments, UserCourse, CourseQuestions, CourseQuestions_Answers, \
     VideoTest
 from utils.mixin_utils import LoginRequireMixin
-
+import numpy as np
 
 class CourseListView(View):
     def get(self, request):
@@ -72,7 +72,14 @@ class CourseTestView(View):
         relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums")
 
         all_resources = CourseResource.objects.filter(course=course)
-        video_test = VideoTest.objects.filter(video_id=video_id)
+        all_test = VideoTest.objects.filter(video_id=video_id)
+        count = 0
+        for each_test in all_test:
+            count = count + 1
+        if count > 5:
+            video_test = np.random.choice(all_test,5,replace=False)
+        else:
+            video_test = all_test
 
         return render(request, "course-test.html", {
             "course": course,
@@ -311,6 +318,7 @@ class AddTestQuestionView(View):
         ansC = request.POST.get("ansC", "")
         ansD = request.POST.get("ansD", "")
         correctAns = request.POST.get("correctAns", "")
+        analysis = request.POST.get("analysis", "")
 
         if not request.user.is_authenticated():
             # 判断用户登录状态
@@ -325,6 +333,7 @@ class AddTestQuestionView(View):
             videoTest.ansC = ansC
             videoTest.ansD = ansD
             videoTest.correctAns = correctAns
+            videoTest.analysis = analysis
             videoTest.save()
             return HttpResponse('{"status": "success", "msg": "添加成功"}', content_type='application/json')
         else:

@@ -159,6 +159,9 @@ EMAIL_HOST_PASSWORD = "a86043309"
 EMAIL_USE_TLS = False
 EMAIL_FROM = "ejinn9394@sina.com"
 
+EMAIL_STUDENT_USER = "studentExample@sina.com"
+EMAIL_STUDENT_PASSWORD = "12345678"
+
 MEDIA_URL = '/media/'       # 上传图片路径说明
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

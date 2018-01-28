@@ -60,6 +60,7 @@ class VideoTest(models.Model):
     ansC = models.CharField(max_length=50, verbose_name='选项C')
     ansD = models.CharField(max_length=50, verbose_name='选项D')
     correctAns = models.CharField(max_length=12, verbose_name='正确答案')
+    analysis = models.CharField(max_length=200, verbose_name='解析')
 
     class Meta:
         verbose_name = '课程小测试'

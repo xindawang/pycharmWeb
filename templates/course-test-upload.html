@@ -22,16 +22,22 @@
         .textarea-question{
             width: 400px;
             height: 100px;
-            border:solid 1px #000;
+            border:solid 1px lightgrey;
+            margin-left:10%;
             resize:both;
             overflow:auto;
         }
         .textarea-answer{
-            width: 200px;
-            height: 60px;
-            border:solid 1px #000;
+            width: 400px;
+            height: 30px;
+            border:solid 1px lightgrey;
+            margin-left:10%;
             resize:both;
             overflow:auto;
+        }
+        .textarea-div{
+            width:600px;
+            margin-left:10%;
         }
     </style>
 {% endblock %}
@@ -61,38 +67,60 @@
 {% block content %}
     <div id="main">
 
-    <div style=" width: 1200px;
-            height: 400px;
-            position:relative;left:50%;
-            transform:translate(-50%,0);">
+    <div style="width:700px;
+            <!--height: 800px;-->
+            margin-right=30%;
+            border:1px solid lightgrey;
+            position:relative;left:20%;">
 
-        <div style="margin-left:30%;float:left;"><p>题目：</p></div>
-        <div style="margin-right:20%float:left;"><textarea id="question_text" class="textarea-question"></textarea></div>
+        <div style="width:600px;margin-left:10%;
+            margin-top:4%;border-bottom:1px solid lightgrey;">
+            <div><p>题目：</p></div>
+            <div><textarea id="question_text" class="textarea-question" style="margin-left:10%;"></textarea></div>
+        </div>
 
-        <div style="margin-left:30%;float:left;"><p>选项A：</p></div>
-        <div style="margin-right:20%;float:left;"><textarea id="ansA_text"class="textarea-answer"></textarea></div>
+        <div class="textarea-div" style="margin-top:4%;">
+            <div><p>选项A：</p></div>
+            <div><textarea id="ansA_text"class="textarea-answer"></textarea></div>
+        </div>
 
-        <div style="margin-left:30%;float:left;"><p>选项B：</p></div>
-        <div style="margin-right:20%;float:left;"><textarea id="ansB_text" class="textarea-answer"></textarea></div>
+        <div class="textarea-div">
+            <div><p>选项B：</p></div>
+            <div><textarea id="ansB_text" class="textarea-answer"></textarea></div>
+        </div>
 
-        <div style="margin-left:30%;float:left;"><p>选项C：</p></div>
-        <div style="margin-right:20%;float:left;"><textarea id="ansC_text" class="textarea-answer"></textarea></div>
+        <div class="textarea-div">
+            <div><p>选项C：</p></div>
+            <div><textarea id="ansC_text" class="textarea-answer"></textarea></div>
+        </div>
 
-        <div style="margin-left:30%;float:left;"><p>选项D：</p></div>
-        <div style="margin-right:20%;float:left;"><textarea id="ansD_text" class="textarea-answer"></textarea></div>
+        <div class="textarea-div" style="border-bottom:1px solid lightgrey;">
+            <div><p>选项D：</p></div>
+            <div><textarea id="ansD_text" class="textarea-answer"></textarea></div>
+        </div>
+        <div style="width:600px;
+            margin-top:4%;
+            margin-left:10%;" >
+            <div><p>正确答案：</p></div>
+            <div>
+                <form>
+                    <input style="margin-left:10%" type="radio" name="correctAns" value="a">选项A
+                    <input style="margin-left:10%" type="radio" name="correctAns" value="b">选项B
+                    <input style="margin-left:10%" type="radio" name="correctAns" value="c">选项C
+                    <input style="margin-left:10%" type="radio" name="correctAns" value="d">选项D
+                </form>
+            </div>
+        </div>
 
-        <div style="margin-left:30%;float:left;"><p>正确答案：</p></div>
-        <div style="margin-right:40%;float:left;">
-            <form>
-                <input type="radio" name="correctAns" value="a">选项A
-                <input type="radio" name="correctAns" value="b">选项B
-                <input type="radio" name="correctAns" value="c">选项C
-                <input type="radio" name="correctAns" value="d">选项D
-            </form>
+        <br>
+        <div class="textarea-div">
+            <div><p>解析</p></div>
+            <div><textarea id="analysis_text" style="height:60px" class="textarea-answer"></textarea></div>
         </div>
     </div>
 
-    <label class="btn btn-primary" style="margin-left:10%;">
+
+    <label class="btn btn-primary" style="margin-left:43%;">
         <input type="button" id="upload_question">上传
     </label>
     <label class="btn btn-primary">
@@ -241,7 +269,8 @@
                 'ansB':$('#ansB_text').val(),
                 'ansC':$('#ansC_text').val(),
                 'ansD':$('#ansD_text').val(),
-                'correctAns':correctAns
+                'correctAns':correctAns,
+                'analysis':$('#analysis_text').val(),
                 },
                 async: true,
                 beforeSend:function(xhr, settings){
