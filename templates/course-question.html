@@ -67,14 +67,17 @@
                         </ul>
                     </div>
 
-                    <!--发布提问-->
-                    <div id="js-pub-container" class="issques clearfix js-form">
-                        <div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">
-                            <textarea id="js-pl-textarea" class="" placeholder="我有问题要提问！" ></textarea>
+                    {% if not user.is_teacher %}
+                        <!--发布提问-->
+                        <div id="js-pub-container" class="issques clearfix js-form">
+                            <div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake">
+                                <textarea id="js-pl-textarea" class="" placeholder="我有问题要提问！" ></textarea>
+                            </div>
+                            <input type="button" id="js-pl-submit" class="pub-btn" data-cid="452" value="我要提问">
+                            <p class="global-errortip js-global-error"></p>
                         </div>
-                        <input type="button" id="js-pl-submit" class="pub-btn" data-cid="452" value="我要提问">
-                        <p class="global-errortip js-global-error"></p>
-                    </div>
+                    {% endif %}
+
                     <div id="course_note">
                         <ul class="mod-post" id="question-list">
 
@@ -112,8 +115,9 @@
                                         {% endif %}
                                         {% endfor %}
                                     </ul>
-
-                                    <button class="questionReply" style="background:white;color:blue">回答</button>
+                                    {% if user.is_teacher %}
+                                        <button class="questionReply" style="background:white;color:blue">回答</button>
+                                    {% endif %}
                                 </div>
                             </li>
                             {% endfor %}

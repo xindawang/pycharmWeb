@@ -69,8 +69,8 @@
 {% block content %}
     <div id="main">
 
-        {% if user.is_staff %}
-        <label class="btn btn-primary" style="margin-left:45%;margin-right:45%;margin-bottom:20px;">
+        {% if user.is_teacher %}
+        <label class="btn btn-primary" style="margin-left:45%;margin-right:45%;margin-bottom:1%;">
             <input type="button" onclick="location='{% url 'course:course_test_upload' video.id %}'">上传题目
         </label>
         {% endif %}
@@ -103,14 +103,14 @@
             </div>
         </div>
         {% endfor %}
-        <label class="btn btn-primary" style="margin-top:50px;margin-left:45%;margin-right:45%;">
+        <label class="btn btn-primary" style="margin-top:4%;margin-left:45%;margin-right:45%;">
             <input type="button" onclick="checkAnswer()">提交
         </label>
         <div id="correctAnswerLable"hidden >
-            <label style="margin-top:50px;margin-left:45%;margin-right:45%;">
+            <label style="margin-top:4%;margin-left:45%;margin-right:45%;">
                 <span>正确答案：{% for each_test in video_test%}{{ each_test.correctAns}}{% endfor %}</span>
             </label>
-            <label style="margin-top:20px;margin-left:45%;margin-right:45%;">
+            <label style="margin-top:2%;margin-left:45%;margin-right:45%;">
                 <span>解析：</span>
             </label>
             {% for each_test in video_test%}

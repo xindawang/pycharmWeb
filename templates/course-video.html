@@ -70,7 +70,7 @@
                 <div class="mod-chapters">
 
                     {% for lesson in course.get_course_lesson %}
-                        <div class="chapter chapter-active" >
+                        <div class="chapter chapter-active" data-id="{{ lesson.id }}">
                         <h3>
                             <strong><i class="state-expand"></i>{{ lesson.name }}</strong>
                         </h3>

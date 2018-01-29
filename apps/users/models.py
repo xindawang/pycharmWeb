@@ -14,7 +14,7 @@ class UserProfile(AbstractUser):       # 创建类必须继承models.Model，类
     address = models.CharField(max_length=100, verbose_name='地区', null=True, blank=True)
     mobile = models.CharField(max_length=11, verbose_name='手机', null=True, blank=True)
     image = models.ImageField(upload_to='image/%Y/%m', verbose_name='头像', default='image/default.png', max_length=100)
-
+    is_teacher = models.BooleanField(default=False)
     class Meta:
         verbose_name = '用户信息'
         verbose_name_plural = verbose_name

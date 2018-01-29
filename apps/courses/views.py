@@ -50,7 +50,6 @@ class CourseListView(View):
         })
 
 class CourseTestView(View):
-    # 视频播放页面
     def get(self, request, video_id):
         video = Video.objects.get(id=int(video_id))
         course = video.lesson.course
@@ -143,12 +142,28 @@ class VideoPlayView(View):
         relate_courses = Course.objects.filter(id__in=course_ids).order_by("-click_nums")
 
         all_resources = CourseResource.objects.filter(course=course)
+        all_comments = CourseComments.objects.all()
+        all_questions = CourseQuestions.objects.all()
+        all_answers = CourseQuestions_Answers.objects.filter(course=course)
+
+        all_test = VideoTest.objects.filter(video_id=video_id)
+        count = 0
+        for each_test in all_test:
+            count = count + 1
+        if count > 5:
+            video_test = np.random.choice(all_test, 5, replace=False)
+        else:
+            video_test = all_test
 
         return render(request, "course-play.html", {
             "course": course,
             "course_recourses": all_resources,
             "relate_courses": relate_courses,
             "video": video,
+            "all_comments": all_comments,
+            "all_questions": all_questions,
+            "all_answers": all_answers,
+            "video_test" :video_test,
         })
 
 
