@@ -309,7 +309,7 @@ class MyMessageView(LoginRequireMixin, View):
         except PageNotAnInteger:
             page = 1
 
-        p = Paginator(all_messages, 1, request=request)
+        p = Paginator(all_messages, 5, request=request)
         messages = p.page(page)
 
         return render(request, 'usercenter-message.html', {

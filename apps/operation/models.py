@@ -36,6 +36,7 @@ class CourseQuestions(models.Model):
     course = models.ForeignKey(Course, verbose_name='课程',on_delete=models.CASCADE)
     questions = models.CharField(max_length=200, verbose_name='提问')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='提问时间')
+    lesson_id = models.IntegerField(verbose_name='章节id')
 
     class Meta:
         verbose_name = '课程提问'
@@ -83,6 +84,8 @@ class UserMessage(models.Model):
     message = models.CharField(max_length=500, verbose_name='消息内容')
     has_read = models.BooleanField(default=False, verbose_name='是否已读')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='消息时间')
+    lesson_id = models.IntegerField()
+    course_id = models.IntegerField()
 
     class Meta:
         verbose_name = '用户消息表'

@@ -7,9 +7,11 @@ from django.db.models import Q
 
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
-from .models import Course, CourseResource, Video
+from organization.models import Teacher
+from users.models import UserProfile
+from .models import Course, CourseResource, Video, Lesson
 from operation.models import UserFavorite, CourseComments, UserCourse, CourseQuestions, CourseQuestions_Answers, \
-    VideoTest
+    VideoTest, UserMessage
 from utils.mixin_utils import LoginRequireMixin
 import numpy as np
 
@@ -143,7 +145,7 @@ class VideoPlayView(View):
 
         all_resources = CourseResource.objects.filter(course=course)
         all_comments = CourseComments.objects.all()
-        all_questions = CourseQuestions.objects.all()
+        all_questions = CourseQuestions.objects.filter(lesson_id=video.lesson.id)
         all_answers = CourseQuestions_Answers.objects.filter(course=course)
 
         all_test = VideoTest.objects.filter(video_id=video_id)
@@ -285,6 +287,7 @@ class AddQuestionsView(View):
     def post(self, request):
         course_id = request.POST.get("course_id", 0)
         questions = request.POST.get("questions", "")
+        lesson_id = request.POST.get("lesson_id", "")
 
         if not request.user.is_authenticated():
             # 判断用户登录状态
@@ -296,7 +299,25 @@ class AddQuestionsView(View):
             course_questions.course = course
             course_questions.questions = questions
             course_questions.user = request.user
+            if lesson_id != '':
+                course_questions.lesson_id = lesson_id
+                lesson = Lesson.objects.get(id=lesson_id)
+                lesson_name = lesson.name
+                lesson_id = lesson.id
+            else:
+                lesson_name = ''
+                lesson_id = 0
             course_questions.save()
+
+            user_message = UserMessage()
+            teacher = Teacher.objects.get(id=course.teacher.id)
+            user_profile = UserProfile.objects.get(id=teacher.user_id)
+            user_message.user = user_profile.id
+            user_message.lesson_id = lesson_id
+            user_message.course_id = course.id
+            user_message.message = "\""+course.name+" "+lesson_name+"\""+"有新的问题"
+            user_message.save()
+
             return HttpResponse('{"status": "success", "msg": "添加成功"}', content_type='application/json')
         else:
             return HttpResponse('{"status": "fail", "msg": "添加失败"}', content_type='application/json')

@@ -212,6 +212,7 @@
         })
         $('#videoView').parent().addClass("active");
 
+        <!--重新载入video.min.js-->
         var js=document.getElementById("videoScript");
         var script=document.createElement("script");
         script.type="text/javascript";
@@ -237,6 +238,7 @@
         return false;
     })
 
+    <!--3个tab点击事件-->
     $('#learnOn').click(function(){
         $('#tabs-change').children('div').remove();
         var txt = '<div class="mod-chapters">{% for lesson in course.get_course_lesson %}<div class="chapter chapter-active" ><h3><strong><i class="state-expand"></i>{{ lesson.name }}</strong></h3><ul class="video">{% for video in lesson.get_lesson_video %}<li><a target="_blank" href="{% url 'course:video_play' video.id %}" class="J-media-item studyvideo">{{ video.name }}{#<i class="study-state"></i>#}</a></li>{% endfor %}</ul></div>{% endfor %}</div>'
@@ -258,16 +260,21 @@
         return false;
     })
     $('#questionOn').click(function(){
+        questionOnClick();
+        return false;
+    })
+    function questionOnClick(){
         $('#tabs-change').children('div').remove();
-        var txt = '{% if not user.is_teacher %}<!--发布提问--><div id="js-pub-container" class="issques clearfix js-form"><div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake"><textarea id="js-pl-textarea" class="" placeholder="我有问题要提问！" ></textarea></div><input type="button" id="add_question" class="pub-btn" data-cid="452" value="我要提问"><p class="global-errortip js-global-error"></p></div>{% endif %}<div id="course_note"><ul class="mod-post" id="question-list">{% for user_questions in all_questions %}<li class="post-row"><div class="media"><span target="_blank"><img src="{{ MEDIA_URL }}{{ user_questions.user.image }}" width="40" height="40" /></span></div><div id="question-id" class="bd" data-id="{{user_questions.id}}"><div class="tit"><span target="_blank">{{ user_questions.user.username}}</span></div><p class="cnt">{{ user_questions.questions}}</p><div class="footer clearfix"><span title="创建时间" class="l timeago">时间：{{ user_questions.add_time }}</span></div><ul class="mod-post" id="answer-list">{% for user_answers in all_answers %}{% if user_answers.question_id == user_questions.id %}<li class="post-row"><div class="media"><span target="_blank"><img src="{{ MEDIA_URL }}{{ user_answers.user.image }}" width="40" height="40" /></span></div><div  class="bd" data-id="{{user_questions.id}}"><div class="tit"><span target="_blank">{{ user_answers.user.username}}</span></div><p class="cnt">{{ user_answers.answers}}</p><div class="footer clearfix"><span title="创建时间" class="l timeago">时间：{{ user_answers.add_time }}</span></div></div></li>{% endif %}{% endfor %}</ul>{% if user.is_teacher %}<button class="questionReply" style="background:white;color:blue">回答</button>{% endif %}</div></li>{% endfor %}</ul></div>'
+        var txt = '{% if not user.is_teacher %}<!--发布提问--><div id="js-pub-container" class="issques clearfix js-form"><div class="wgt-ipt-wrap pub-editor-wrap " id="js-pl-input-fake"><textarea id="js-pl-textarea" class="" placeholder="我有问题要提问！" ></textarea></div><input type="button" id="add_question" class="pub-btn" onclick="add_question()" value="我要提问"><p class="global-errortip js-global-error"></p></div>{% endif %}<div id="course_note"><ul class="mod-post" id="question-list">{% for user_questions in all_questions %}<li class="post-row"><div class="media"><span target="_blank"><img src="{{ MEDIA_URL }}{{ user_questions.user.image }}" width="40" height="40" /></span></div><div id="question-id" class="bd" data-id="{{user_questions.id}}"><div class="tit"><span target="_blank">{{ user_questions.user.username}}</span></div><p class="cnt">{{ user_questions.questions}}</p><div class="footer clearfix"><span title="创建时间" class="l timeago">时间：{{ user_questions.add_time }}</span></div><ul class="mod-post" id="answer-list">{% for user_answers in all_answers %}{% if user_answers.question_id == user_questions.id %}<li class="post-row"><div class="media"><span target="_blank"><img src="{{ MEDIA_URL }}{{ user_answers.user.image }}" width="40" height="40" /></span></div><div  class="bd" data-id="{{user_questions.id}}"><div class="tit"><span target="_blank">{{ user_answers.user.username}}</span></div><p class="cnt">{{ user_answers.answers}}</p><div class="footer clearfix"><span title="创建时间" class="l timeago">时间：{{ user_answers.add_time }}</span></div></div></li>{% endif %}{% endfor %}</ul>{% if user.is_teacher %}<button class="questionReply" style="background:white;color:blue">回答</button>{% endif %}</div></li>{% endfor %}</ul></div>'
         $('#tabs-change').append(txt);
         $('.ui-tabs-active').each(function(){
             $(this).removeClass("active");
         })
-        $(this).addClass("active");
+        $('#questionOn').addClass("active");
         return false;
-    })
+    }
 
+    <!--我要回答效果-->
     $('.questionReply').on('click', function(){
     var questionId = $(this).parents("#question-id").attr("data-id")
     var txt = '<div id="js-pub-container" class="issques clearfix js-form">'+
@@ -351,7 +358,7 @@
     });
 
     //添加提问
-    $('#add_question').on('click', function(){
+    function add_question(){
         var questions = $("#js-pl-textarea").val()
         if(questions == ""){
             alert("提问不能为空")
@@ -361,7 +368,10 @@
             cache: false,
             type: "POST",
             url:"{% url 'course:add_aquestion'%}",
-            data:{'course_id':{{ course.id }}, 'questions':questions},
+            data:{'course_id':{{ course.id }},
+            'questions':questions,
+            'lesson_id':{{ video.lesson.id }},
+            },
             async: true,
             beforeSend:function(xhr, settings){
                 xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
@@ -375,10 +385,10 @@
                     }
 
                 }else if(data.status == 'success'){
-                    window.location.reload();//刷新当前页面.
+                    questionOnClick();//刷新当前页面.
                 }
             },
         });
-    });
+    };
     </script>
 {% endblock %}

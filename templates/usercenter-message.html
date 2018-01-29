@@ -35,9 +35,15 @@
                 <div class="messages">
                     <div class="fr">
                         <div class="top"><span class="fl time">{{ message.add_time }}</span><span class="fr btn foldbtn"></span></div>
+                        {% if message.course_id %}
+                        <a href="{% url 'course:course_question' message.course_id %}">
+                            {{ message.message }}
+                        </a>
+                        {% else %}
                         <p>
                             {{ message.message }}
                         </p>
+                        {% endif%}
                     </div>
                 </div>
             {% endfor %}
@@ -52,7 +58,7 @@
                 {% for page in messages.pages %}
                     {% if page %}
                         {% ifequal page messages.number %}
-                           <li class="active"><a href=?{{ page.querystring }}">{{ page }}</a></li>
+                           <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
                         {% else %}
                             <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
                         {% endifequal %}
