@@ -3,7 +3,8 @@
 from django.conf.urls import url, include
 
 from .views import CourseListView, CourseDetailView, CourseInfoView, CourseCommentView, AddCommentsView, VideoPlayView, \
-    CourseQuestionView, CourseTestView, AddQuestionsView, AddAnswersView, CourseTestUploadView, AddTestQuestionView
+    CourseQuestionView, CourseTestView, AddQuestionsView, AddAnswersView, CourseTestUploadView, AddTestQuestionView, \
+    DeleteTestView
 
 urlpatterns = [
     # 课程机构首页
@@ -18,6 +19,8 @@ urlpatterns = [
     url(r'^question/(?P<course_id>\d+)/$', CourseQuestionView.as_view(), name='course_question'),
     # 课程小测试页
     url(r'^test/(?P<video_id>\d+)/$', CourseTestView.as_view(), name='course_test'),
+    # 删除课程题目页
+    url(r'^delete_test/$', DeleteTestView.as_view(), name='delete_test'),
     # 课程小测试页上传题目页
     url(r'^test_upload/(?P<video_id>\d+)/$', CourseTestUploadView.as_view(), name='course_test_upload'),
     # 课程小测试页上传题目

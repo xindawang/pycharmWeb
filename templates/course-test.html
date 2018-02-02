@@ -44,6 +44,10 @@
             }
         })
     }
+
+    function deleteTestQuestion(){
+        alert("aa");
+    }
     </script>
 {% endblock %}
 
@@ -87,9 +91,14 @@
         <div class="questionDiv" data-id="{{each_test.correctAns}}" style="border-bottom:4px solid lightgrey">
             <div style="margin-top:3%;margin-left:2%;margin-right:2%">
                 <div style="margin-left:2%;margin-right:2%;border-bottom:1px solid lightgrey">
-                    <label>
+                    <label style="margin-bottom:2%;">
                         <span style="font-size:16px;font-weight:bold">{{forloop.counter}}.{{ each_test.question}}</span>
                     </label>
+                    {% if user.is_teacher %}
+                        <label class="btn btn-danger" style="float:right;margin-right:2%;margin-bottom:1%;">
+                            <input data-id="{{ each_test.id}}" type="button" onclick="deleteTestQuestion()">删除题目
+                        </label>
+                    {% endif %}
                 </div>
                     <div style="margin-top:16px">
                         <form>

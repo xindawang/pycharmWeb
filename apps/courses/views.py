@@ -282,6 +282,23 @@ class AddCommentsView(View):
         else:
             return HttpResponse('{"status": "fail", "msg": "添加失败"}', content_type='application/json')
 
+class DeleteTestView(View):
+    # 用户添加课程评论
+    def post(self, request):
+        test_id = request.POST.get("test_id", 0)
+
+        if not request.user.is_authenticated():
+            # 判断用户登录状态
+            return HttpResponse('{"status": "fail", "msg": "用户未登录"}', content_type='application/json')
+
+        if int(test_id) > 0:
+            video_test = VideoTest.objects.filter(id=test_id)
+            video_test.delete()
+            return HttpResponse('{"status": "success", "msg": "删除成功"}', content_type='application/json')
+        else:
+            return HttpResponse('{"status": "fail", "msg": "删除失败"}', content_type='application/json')
+
+
 class AddQuestionsView(View):
     # 用户添加课程评论
     def post(self, request):

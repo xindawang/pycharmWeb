@@ -231,7 +231,7 @@
     $('#testView').click(function(){
         $('#videoOrTest').children('div').remove();
         $('#videoOrTest').children('label').remove();
-        var txt = '{% if user.is_teacher %}<label class="btn btn-primary" style="margin-left:45%;margin-right:45%;margin-bottom:1%;"><input type="button" onclick="location='{% url 'course:course_test_upload' video.id %}'">上传题目</label>{% endif %}<div style=" position:relative;left:50%; border:1px solid lightgrey; margin-right:30%; transform:translate(-50%,0);">{% for each_test in video_test%}<div class="questionDiv" data-id="{{each_test.correctAns}}" style="border-bottom:4px solid lightgrey"><div style="margin-top:3%;margin-left:2%;margin-right:2%"><div style="margin-left:2%;margin-right:2%;border-bottom:1px solid lightgrey"><label><span style="font-size:16px;font-weight:bold">{{forloop.counter}}.{{ each_test.question}}</span></label></div><div style="margin-top:16px"><form><input class="option-radio-style" type="radio" name="ans" value="a"><span class="option-style">A：{{ each_test.ansA}}<br><br></span><input class="option-radio-style" type="radio" name="ans" value="b"><span class="option-style">B：{{ each_test.ansB }}<br><br></span><input class="option-radio-style" type="radio" name="ans" value="c"><span class="option-style">C：{{ each_test.ansC }}<br><br></span><input class="option-radio-style" type="radio" name="ans" value="d"><span class="option-style">D：{{ each_test.ansD }}<br><br></span></form></div></div><div id="correctAnswerLabel" class="correctAnswerLabel" hidden ><div style="margin-top:3%;margin-left:2%;margin-right:2%"><div><label><span style="font-size:16px">答案：{{ each_test.correctAns}}<br>解析： {% if each_test.analysis %} {{ each_test.analysis}} {% else %} 无 {% endif %}</span></label></div></div></div></div>{% endfor %}<label class="btn btn-primary" style="margin-top:4%;margin-left:45%;margin-right:45%;"><input type="button" onclick="checkAnswer()">提交</label></div>'
+        var txt = '{% if user.is_teacher %}<label class="btn btn-primary" style="margin-left:45%;margin-right:45%;margin-bottom:1%;"><input type="button" onclick="location="{% url "course:course_test_upload" video.id %}"">上传题目</label>{% endif %}<div style=" position:relative;left:50%; border:1px solid lightgrey; margin-right:30%; transform:translate(-50%,0);">{% for each_test in video_test%}<div class="questionDiv" data-id="{{each_test.correctAns}}" style="border-bottom:4px solid lightgrey"><div style="margin-top:3%;margin-left:2%;margin-right:2%"><div style="margin-left:2%;margin-right:2%;border-bottom:1px solid lightgrey"><label class="questionLabel" style="margin-bottom:2%;"><span style="font-size:16px;font-weight:bold">{{forloop.counter}}.{{ each_test.question}}</span></label>{% if user.is_teacher %}<label class="btn btn-danger" style="float:right;margin-right:2%;margin-bottom:1%;"><input data-id="{{ each_test.id}}" type="button" onclick="deleteTestQuestion(this)">删除题目</label>{% endif %}</div><div style="margin-top:16px"><form><input class="option-radio-style" type="radio" name="ans" value="a"><span class="option-style">A：{{ each_test.ansA}}<br><br></span><input class="option-radio-style" type="radio" name="ans" value="b"><span class="option-style">B：{{ each_test.ansB }}<br><br></span><input class="option-radio-style" type="radio" name="ans" value="c"><span class="option-style">C：{{ each_test.ansC }}<br><br></span><input class="option-radio-style" type="radio" name="ans" value="d"><span class="option-style">D：{{ each_test.ansD }}<br><br></span></form></div></div><div id="correctAnswerLabel" class="correctAnswerLabel" hidden ><div style="margin-top:3%;margin-left:2%;margin-right:2%"><div><label><span style="font-size:16px">答案：{{ each_test.correctAns}}<br>解析： {% if each_test.analysis %} {{ each_test.analysis}} {% else %} 无 {% endif %}</span></label></div></div></div></div>{% endfor %}<label class="btn btn-primary" style="margin-top:4%;margin-left:45%;margin-right:45%;"><input type="button" onclick="checkAnswer()">提交</label></div>'
         $('#videoOrTest').append(txt);
         $('.rot').each(function(){
             $(this).removeClass("active");
@@ -239,6 +239,32 @@
         $(this).parent().addClass("active");
         return false;
     })
+
+    function deleteTestQuestion(obj){
+        var testId = $(obj).attr("data-id")
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url:"{% url 'course:delete_test'%}",
+            data:{'test_id':testId},
+            async: true,
+            beforeSend:function(xhr, settings){
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            },
+            success: function(data) {
+                if(data.status == 'fail'){
+                    if(data.msg == '用户未登录'){
+                        window.location.href="/login/";
+                    }else{
+                        alert(data.msg)
+                    }
+
+                }else if(data.status == 'success'){
+                    window.location.reload();//刷新当前页面.
+                }
+            },
+        });
+    }
 
     //查看答案
     function checkAnswer(){
@@ -249,7 +275,7 @@
         $(".questionDiv").each(function(index,e){
             var optionValue= $(this).children("div").children("div").children("form").children("input:radio[name='ans']:checked").val()
             if ($(this).attr("data-id") != optionValue){
-                $(this).children("div").children("div").children("label").attr("style","color:red")
+                $(this).children("div").children("div").children(".questionLabel").attr("style","color:red;margin-bottom:2%;")
             }
         })
     }
